@@ -9,14 +9,18 @@ const LINKING_ERROR =
 const ReactNativeTvosSslPinning = NativeModules.ReactNativeTvosSslPinning
   ? NativeModules.ReactNativeTvosSslPinning
   : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
+    {},
+    {
+      get() {
+        throw new Error(LINKING_ERROR);
+      },
+    }
+  );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return ReactNativeTvosSslPinning.multiply(a, b);
+export function getAvailableCertificates() {
+  return ReactNativeTvosSslPinning.getAvailableCertificates();
+}
+
+export function fetchDataWithPinning(url: string, options: any) {
+  return ReactNativeTvosSslPinning.fetchDataWithPinning(url, options);
 }
