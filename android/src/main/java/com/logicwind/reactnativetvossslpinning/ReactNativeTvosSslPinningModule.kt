@@ -22,11 +22,7 @@ class ReactNativeTvosSslPinningModule(reactContext: ReactApplicationContext) :
   override fun getName(): String {
     return NAME
   }
-
-  override fun getName(): String {
-        return "SSLPinning"
-  }
-
+  
   @ReactMethod
   fun fetch(url: String, obj: ReadableMap, promise: Promise) {
       fetchDataWithPinning(url, obj, promise)
