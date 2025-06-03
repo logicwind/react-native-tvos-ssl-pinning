@@ -69,14 +69,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/logicwind/react-native-ssl-pinning-tvos.git"
+    "url": "git+https://github.com/logicwind/react-native-tvos-ssl-pinning.git"
   },
   "author": "Logicwind <devtools@logicwind.com> (https://github.com/devtools-logicwind)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/logicwind/react-native-ssl-pinning-tvos/issues"
+    "url": "https://github.com/logicwind/react-native-tvos-ssl-pinning/issues"
   },
-  "homepage": "https://github.com/logicwind/react-native-ssl-pinning-tvos#readme",
+  "homepage": "https://github.com/logicwind/react-native-tvos-ssl-pinning#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
