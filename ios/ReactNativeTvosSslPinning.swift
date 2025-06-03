@@ -4,133 +4,153 @@ import CommonCrypto
 
 @objc(ReactNativeTvosSslPinning)
 class ReactNativeTvosSslPinning: NSObject {
- 
-  @objc
-  static func requiresMainQueueSetup() -> Bool {
-      return false
-  }
-    
-  @objc
-  func fetchDataWithPinning(_ url: String,
-                            options: NSDictionary,
-                            resolver: @escaping RCTPromiseResolveBlock,
-                            rejecter: @escaping RCTPromiseRejectBlock) {
-      
-      guard let url = URL(string: url) else {
-          rejecter("INVALID_URL", "Invalid URL provided", nil)
-          return
-      }
-      
-      var request = URLRequest(url: url)
-      
-      // Set method
-      let method = options["method"] as? String ?? "GET"
-      request.httpMethod = method
-      
-      // Set headers
-      if let headers = options["headers"] as? [String: String] {
-          for (key, value) in headers {
-              request.setValue(value, forHTTPHeaderField: key)
-          }
-      }
-      
-      // Set body
-      if let body = options["body"] as? String, method != "GET" {
-          request.httpBody = body.data(using: .utf8)
-      }
-      
-      // Set timeout
-      let timeout = options["timeoutInterval"] as? TimeInterval ?? 10.0
-      request.timeoutInterval = timeout / 1000.0 // Convert ms to seconds
-      
-      // Create session with SSL pinning
-      let session = createURLSessionWithPinning(options: options)
-      
-      session.dataTask(with: request) { [weak self] data, response, error in
-          if let error = error {
-              // Check if it's SSL pinning related error
-              if (error as NSError).code == NSURLErrorServerCertificateUntrusted ||
-                  (error as NSError).code == NSURLErrorSecureConnectionFailed {
-                  rejecter("SSL_PINNING_FAILED", "SSL Certificate pinning failed: \(error.localizedDescription)", error)
-              } else {
-                  rejecter("NETWORK_ERROR", error.localizedDescription, error)
-              }
-              return
-          }
-          
-          guard let httpResponse = response as? HTTPURLResponse else {
-              rejecter("INVALID_RESPONSE", "Invalid response type", nil)
-              return
-          }
-          
-          let responseDict: [String: Any] = [
-              "status": httpResponse.statusCode,
-              "url": httpResponse.url?.absoluteString ?? url.absoluteString,
-              "headers": httpResponse.allHeaderFields,
-              "data": String(data: data ?? Data(), encoding: .utf8) ?? ""
-          ]
-          
-          resolver(responseDict)
-      }.resume()
-  }
-  
-  @objc
-  func getCertificateFingerprint(_ hostname: String,
+    @objc
+    static func requiresMainQueueSetup() -> Bool {
+        return false
+    }
+        
+    @objc
+    func fetchDataWithPinning(_ url: String,
+                                options: NSDictionary,
                                 resolver: @escaping RCTPromiseResolveBlock,
                                 rejecter: @escaping RCTPromiseRejectBlock) {
-      
-      guard let url = URL(string: "https://\(hostname)") else {
-          rejecter("INVALID_URL", "Invalid hostname", nil)
-          return
-      }
-      
-      var request = URLRequest(url: url)
-      request.timeoutInterval = 10.0
-      
-      let session = URLSession(configuration: .default, delegate: CertificateExtractor(), delegateQueue: nil)
-      
-      session.dataTask(with: request) { _, _, error in
-          // The delegate will handle the certificate extraction
-          if let extractor = session.delegate as? CertificateExtractor {
-              if let fingerprint = extractor.certificateFingerprint {
-                  resolver(fingerprint)
-              } else {
-                  rejecter("NO_CERTIFICATE", "Could not extract certificate", error)
-              }
-          } else {
-              rejecter("EXTRACTION_ERROR", "Certificate extraction failed", error)
-          }
-      }.resume()
-  }
+        
+        guard let url = URL(string: url) else {
+            rejecter("INVALID_URL", "Invalid URL provided", nil)
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        
+        // Set method
+        let method = options["method"] as? String ?? "GET"
+        request.httpMethod = method
+        
+        // Set headers
+        if let headers = options["headers"] as? [String: String] {
+            for (key, value) in headers {
+                request.setValue(value, forHTTPHeaderField: key)
+            }
+        }
+        
+        // Set body
+        if let body = options["body"] as? String, method != "GET" {
+            request.httpBody = body.data(using: .utf8)
+        }
+        
+        // Set timeout
+        let timeout = options["timeoutInterval"] as? TimeInterval ?? 10.0
+        request.timeoutInterval = timeout / 1000.0 // Convert ms to seconds
+        
+        // Create session with SSL pinning
+        let session = createURLSessionWithPinning(options: options)
+        
+        session.dataTask(with: request) { [weak self] data, response, error in
+            if let error = error {
+                // Check if it's SSL pinning related error
+                if (error as NSError).code == NSURLErrorServerCertificateUntrusted ||
+                    (error as NSError).code == NSURLErrorSecureConnectionFailed {
+                    rejecter("SSL_PINNING_FAILED", "SSL Certificate pinning failed: \(error.localizedDescription)", error)
+                } else {
+                    rejecter("NETWORK_ERROR", error.localizedDescription, error)
+                }
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                rejecter("INVALID_RESPONSE", "Invalid response type", nil)
+                return
+            }
+            
+            let responseDict: [String: Any] = [
+                "status": httpResponse.statusCode,
+                "url": httpResponse.url?.absoluteString ?? url.absoluteString,
+                "headers": httpResponse.allHeaderFields,
+                "data": String(data: data ?? Data(), encoding: .utf8) ?? ""
+            ]
+            
+            resolver(responseDict)
+        }.resume()
+    }
+    
+    @objc
+    func getCertificateFingerprint(_ hostname: String,
+                                    resolver: @escaping RCTPromiseResolveBlock,
+                                    rejecter: @escaping RCTPromiseRejectBlock) {
+        
+        guard let url = URL(string: "https://\(hostname)") else {
+            rejecter("INVALID_URL", "Invalid hostname", nil)
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 10.0
+        
+        let session = URLSession(configuration: .default, delegate: CertificateExtractor(), delegateQueue: nil)
+        
+        session.dataTask(with: request) { _, _, error in
+            // The delegate will handle the certificate extraction
+            if let extractor = session.delegate as? CertificateExtractor {
+                if let fingerprint = extractor.certificateFingerprint {
+                    resolver(fingerprint)
+                } else {
+                    rejecter("NO_CERTIFICATE", "Could not extract certificate", error)
+                }
+            } else {
+                rejecter("EXTRACTION_ERROR", "Certificate extraction failed", error)
+            }
+        }.resume()
+    }
+
+    @objc
+    func getAvailableCertificates(_ resolver: @escaping RCTPromiseResolveBlock,
+                                rejecter: @escaping RCTPromiseRejectBlock) {
+        do {
+            // Get the main bundle
+            let bundle = Bundle.main
+            
+            // Get all files in the bundle
+            let files = try FileManager.default.contentsOfDirectory(atPath: bundle.bundlePath)
+            
+            // Filter for certificate files
+            let certFiles = files.filter { file in
+                file.hasSuffix(".cer") || file.hasSuffix(".crt") || file.hasSuffix(".pem")
+            }
+            
+            resolver(certFiles)
+        } catch {
+            rejecter("CERT_LIST_ERROR", "Failed to list certificates: \(error.localizedDescription)", error)
+        }
+    }
+
+    @objc
+    func validateCertificate(_ hostname: String,
+                            expectedCert: String,
+                            resolver: @escaping RCTPromiseResolveBlock,
+                            rejecter: @escaping RCTPromiseRejectBlock) {
+        
+        getCertificateFingerprint(hostname) { fingerprint in
+            if let actualFingerprint = fingerprint as? String {
+                resolver(actualFingerprint == expectedCert)
+            } else {
+                resolver(false)
+            }
+        } rejecter: { _, _, _ in
+            resolver(false)
+        }
+    }
   
-  @objc
-  func validateCertificate(_ hostname: String,
-                          expectedCert: String,
-                          resolver: @escaping RCTPromiseResolveBlock,
-                          rejecter: @escaping RCTPromiseRejectBlock) {
-      
-      getCertificateFingerprint(hostname) { fingerprint in
-          if let actualFingerprint = fingerprint as? String {
-              resolver(actualFingerprint == expectedCert)
-          } else {
-              resolver(false)
-          }
-      } rejecter: { _, _, _ in
-          resolver(false)
-      }
-  }
-  
-  private func createURLSessionWithPinning(options: NSDictionary) -> URLSession {
-      let config = URLSessionConfiguration.default
-      
-      if let timeout = options["timeoutInterval"] as? TimeInterval {
-          config.timeoutIntervalForRequest = timeout / 1000.0
-          config.timeoutIntervalForResource = timeout / 1000.0
-      }
-      
-      let delegate = SSLPinningDelegate(options: options)
-      return URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
-  }
+    private func createURLSessionWithPinning(options: NSDictionary) -> URLSession {
+        let config = URLSessionConfiguration.default
+        
+        if let timeout = options["timeoutInterval"] as? TimeInterval {
+            config.timeoutIntervalForRequest = timeout / 1000.0
+            config.timeoutIntervalForResource = timeout / 1000.0
+        }
+        
+        let delegate = SSLPinningDelegate(options: options)
+        return URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
+    }
 }
 
 // Separate class for extracting certificate fingerprints

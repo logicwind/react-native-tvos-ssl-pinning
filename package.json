@@ -49,7 +49,23 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "ssl",
+    "ssl-pinning",
+    "tvos",
+    "react-native-tvos",
+    "certificate-pinning",
+    "https",
+    "network-security",
+    "fetch",
+    "axios",
+    "ssl-pinning-tvos",
+    "react-native-ssl",
+    "secure-networking",
+    "react-native-networking",
+    "tls",
+    "cert-pinning",
+    "native-module"
   ],
   "repository": {
     "type": "git",

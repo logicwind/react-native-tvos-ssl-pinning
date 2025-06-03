@@ -18,6 +18,10 @@ RCT_EXTERN_METHOD(validateCertificate:(NSString *)hostname
                   expectedCert:(NSString *)expectedCert
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
+
+// Method to get available certificate in the bundle
+RCT_EXTERN_METHOD(getAvailableCertificates:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
                   
 + (BOOL)requiresMainQueueSetup
 {
