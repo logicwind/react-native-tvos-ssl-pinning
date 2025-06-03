@@ -1,33 +1,68 @@
 # @logicwind/react-native-tvos-ssl-pinning
 
-React-native TVOS plugin to support ssl pinning.
+React-Native ssl pinning on tvos using OkHttp 3 in Android, and URLSession-based custom implementation on tvOS.
 
-## Installation
 
-```sh
-npm install @logicwind/react-native-tvos-ssl-pinning
-```
+## Getting started
+
+`$ npm install @logicwind/react-native-tvos-ssl-pinning --save`
+
+### Install pods for ios
+`$ cd ios && pod install && cd ..`
+
+### Mostly automatic installation
+
+> If you are using `React Native 0.60.+` [the link should happen automatically](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md). in iOS run pod install
+
+`$ react-native link @logicwind/react-native-tvos-ssl-pinning`
 
 ## Usage
 
+#### Create the certificates:
 
-```js
-import { multiply } from '@logicwind/react-native-tvos-ssl-pinning';
+1. openssl s_client -showcerts -servername example.com -connect example.com:443 </dev/null
 
-// ...
+2. Copy the certificate (Usally the first one in the chain), and paste it using nano or other editor like so , nano mycert.pem
+3. convert it to .cer with this command
+openssl x509 -in mycert.pem -outform der -out mycert.cer 
+```
+For more ways to obtain the server certificate please refer:
+https://stackoverflow.com/questions/7885785/using-openssl-to-get-the-certificate-from-a-server
+```
+#### iOS
+ - Drag mycert.cer to Xcode project, mark your target and 'Copy items if needed'
+ - Your certificate will be automatically detect from the target
+ 
+#### Android
+ - Place your .cer files under src/main/assets/.
+ - Your certificate will be automatically detect from the target
 
-const result = await multiply(3, 7);
+ ### Certificate Pinning
+
+```javascript
+import { fetchDataWithPinning, getAvailableCertificates } from '@logicwind/react-native-tvos-ssl-pinning';
+
+fetchDataWithPinning(url, {
+	method: "POST" ,
+	timeoutInterval: communication_timeout, // milliseconds
+	body: body,
+	sslPinning: {
+		certs: ["cert1","cert2"] // your certificates name (without extension), for example cert1.cer, cert2.cer
+	},
+	headers: {
+		Accept: "application/json; charset=utf-8", "Access-Control-Allow-Origin": "*", "e_platform": "mobile",
+	}
+})
+.then(response => {
+	console.log(`response received ${response}`)
+})
+.catch(err => {
+	console.log(`error: ${err}`)
+})
+
+// if you want to see the attached certificates
+const result = await getAvailableCertificates();
 ```
 
-
-## Contributing
-
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
-
 ## License
-
-MIT
-
----
-
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+This project is licensed under the terms of the MIT license.
