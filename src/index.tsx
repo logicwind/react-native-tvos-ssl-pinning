@@ -1,5 +1,25 @@
 import { NativeModules, Platform } from 'react-native';
 
+export interface PinningOptions {
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  headers?: Record<string, string>;
+  body?: string;
+  timeoutInterval?: number;
+  sslPinning?: {
+    certs: string[];
+  };
+  // Any other custom options you expose
+  [key: string]: any;
+}
+
+export interface PinningResponse {
+  status: number;
+  headers: Record<string, string>;
+  body: string;
+  [key: string]: any;
+}
+
+
 const LINKING_ERROR =
   `The package '@logicwind/react-native-tvos-ssl-pinning' doesn't seem to be linked. Make sure: \n\n` +
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
@@ -17,10 +37,10 @@ const ReactNativeTvosSslPinning = NativeModules.ReactNativeTvosSslPinning
     }
   );
 
-export function getAvailableCertificates() {
+export function getAvailableCertificates(): string[] {
   return ReactNativeTvosSslPinning.getAvailableCertificates();
 }
 
-export function fetchDataWithPinning(url: string, options: any) {
+export function fetchDataWithPinning(url: string, options: PinningOptions): PinningResponse {
   return ReactNativeTvosSslPinning.fetchDataWithPinning(url, options);
 }

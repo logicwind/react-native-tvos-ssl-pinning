@@ -1,22 +1,5 @@
+import { PinningOptions, PinningResponse } from './index'
 declare module '@logicwind/react-native-tvos-ssl-pinning' {
-    export interface PinningOptions {
-        method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-        headers?: Record<string, string>;
-        body?: string;
-        timeoutInterval?: number;
-        sslPinning?: {
-            certs: string[];
-        };
-        // Any other custom options you expose
-        [key: string]: any;
-    }
-
-    export interface PinningResponse {
-        status: number;
-        headers: Record<string, string>;
-        body: string;
-    }
-
     /**
      * Returns a list of available certificate names bundled with the app.
      */
