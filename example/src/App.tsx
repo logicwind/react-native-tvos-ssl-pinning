@@ -1,13 +1,38 @@
-import { multiply } from '@logicwind/react-native-tvos-ssl-pinning';
+import React, { useState, useEffect, type JSX } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { useState, useEffect } from 'react';
 
-export default function App() {
-  const [result, setResult] = useState<number | undefined>();
+import { fetchDataWithPinning, getAvailableCertificates, type PinningOptions } from '@logicwind/react-native-tvos-ssl-pinning';
+
+export default function App(): JSX.Element {
+  const [result, setResult] = useState<any>();
 
   useEffect(() => {
-    multiply(3, 7).then(setResult);
+    callApiForData()
   }, []);
+
+  const callApiForData = async (): Promise<void> => {
+    try {
+      const options: PinningOptions = {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        sslPinning: {
+          certs: ['cert1', 'cert2'],
+        },
+        timeoutInterval: 10,
+      };
+
+      const availableCertificates = await getAvailableCertificates(); // just if you wanna see the available certificate names.
+
+      const response = await fetchDataWithPinning('https://api_url.com/', options)
+      setResult(response?.data)
+    } catch (error) {
+      // handle error
+    } finally {
+      // handle finally
+    }
+  }
 
   return (
     <View style={styles.container}>
