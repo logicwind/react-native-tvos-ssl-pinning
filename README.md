@@ -64,5 +64,11 @@ fetchDataWithPinning(url, {
 const result = await getAvailableCertificates();
 ```
 
+## react-native-tvos-ssl-pinning is crafted mindfully at [Logicwind](https://www.logicwind.com?utm_source=github&utm_medium=github.com-logicwind&utm_campaign=react-native-tvos-ssl-pinning)
+
+We are a 130+ people company developing and designing multiplatform applications using the Lean & Agile methodology. To get more information on the solutions that would suit your needs, feel free to get in touch by [email](mailto:sales@logicwind.com) or through or [contact form](https://www.logicwind.com/contact-us?utm_source=github&utm_medium=github.com-logicwind&utm_campaign=react-native-tvos-ssl-pinning)!
+
+We will always answer you with pleasure 😁
+
 ## License
 This project is licensed under the terms of the MIT license.
