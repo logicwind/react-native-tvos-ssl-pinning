@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## 0.1.1
+
+- Updated readme.
+
 ## 0.1.0
 
 - Initial release of `react-native-ssl-pinning-tvos`.

@@ -5,10 +5,23 @@ React-Native ssl pinning on tvos using OkHttp 3 in Android, and URLSession-based
 
 ## Getting started
 
-`$ npm install @logicwind/react-native-tvos-ssl-pinning --save`
+```sh md title="Terminal"
+npm install @logicwind/react-native-tvos-ssl-pinning --save
+```
 
 ### Install pods for ios
-`$ cd ios && pod install && cd ..`
+
+```sh md title="Terminal"
+cd ios && pod install && cd ..
+```
+
+### Expo Setup
+
+If you're working with this Expo project, make sure to run:
+
+```sh md title="Terminal"
+npx expo prebuild
+```
 
 ### Mostly automatic installation
 
