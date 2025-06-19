@@ -1,6 +1,6 @@
 {
   "name": "@logicwind/react-native-tvos-ssl-pinning",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React-native TVOS plugin to support ssl pinning.",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
